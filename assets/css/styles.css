@@ -708,8 +708,8 @@ img {
   color: #fff;
 }
 
-.project__img {
-  width: 200px;
+.projectMind__img {
+  width: 180px;
   height: 250px;
   justify-self: center;
 }

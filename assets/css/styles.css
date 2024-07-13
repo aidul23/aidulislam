@@ -362,13 +362,16 @@ img {
   display: inline-block;
   background-color: var(--first-color);
   color: #fff;
+  font-family: "Poppins", sans-serif;
   padding: 1rem;
+  border: none;
   border-radius: 0.5rem;
   font-weight: var(--font-medium);
 }
 
 .button:hover {
   background-color: var(--first-color-alt);
+  cursor: pointer;
 }
 
 .button__icon {
@@ -514,7 +517,11 @@ img {
 }
 
 .skills__javascript {
-  width: 70%;
+  width: 80%;
+}
+
+.skills__typescript {
+  width: 60%;
 }
 
 .skills__kotlin {

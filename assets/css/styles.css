@@ -399,7 +399,7 @@ img {
   width: 200px;
   border-radius: 0.5rem;
   justify-self: center;
-  align-self: center;
+  margin-top: 0.5rem;
 }
 
 .about__description {

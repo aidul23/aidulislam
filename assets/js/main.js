@@ -172,3 +172,57 @@ themeButton.addEventListener('click', () => {
     localStorage.setItem('selected-theme', getCurrentTheme())
     localStorage.setItem('selected-icon', getCurrentIcon())
 })
+
+/*==================== PUBLICATION ABSTRACT HOVER MODAL ====================*/
+const publicationAbstracts = document.querySelectorAll('.publications__description')
+
+if (publicationAbstracts.length > 0) {
+    const abstractModal = document.createElement('div')
+    abstractModal.className = 'publications__hover-modal'
+    document.body.appendChild(abstractModal)
+
+    let activeAbstract = null
+
+    const positionModal = (event) => {
+        if (!event) return
+        const gap = 16
+        const modalRect = abstractModal.getBoundingClientRect()
+        const viewportW = window.innerWidth
+        const viewportH = window.innerHeight
+
+        let left = event.clientX + gap
+        let top = event.clientY + gap
+
+        if (left + modalRect.width > viewportW - gap) {
+            left = event.clientX - modalRect.width - gap
+        }
+        if (top + modalRect.height > viewportH - gap) {
+            top = viewportH - modalRect.height - gap
+        }
+        if (left < gap) left = gap
+        if (top < gap) top = gap
+
+        abstractModal.style.left = `${left}px`
+        abstractModal.style.top = `${top}px`
+    }
+
+    publicationAbstracts.forEach((item) => {
+        item.addEventListener('mouseenter', (event) => {
+            activeAbstract = item
+            abstractModal.textContent = item.textContent.trim()
+            abstractModal.classList.add('show')
+            positionModal(event)
+        })
+
+        item.addEventListener('mousemove', (event) => {
+            if (activeAbstract === item) positionModal(event)
+        })
+
+        item.addEventListener('mouseleave', () => {
+            if (activeAbstract === item) {
+                abstractModal.classList.remove('show')
+                activeAbstract = null
+            }
+        })
+    })
+}

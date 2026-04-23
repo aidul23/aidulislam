@@ -73,6 +73,11 @@ jobs:
           print(f"Wrote {output} with {len(posts)} posts")
           PY
 
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Commit updated blog index
         run: |
           if git diff --quiet -- blogs/index.json; then

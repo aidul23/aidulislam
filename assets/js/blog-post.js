@@ -52,6 +52,26 @@ function formatDate(raw) {
   });
 }
 
+async function fetchMarkdownWithFallback(markdownPath) {
+  const localRes = await fetch(markdownPath);
+  if (localRes.ok) return localRes.text();
+
+  // GitHub Pages fallback for cases where .md is not served directly.
+  const host = window.location.hostname;
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  const owner = host.endsWith("github.io") ? host.split(".")[0] : "";
+  const repo = pathParts.length > 0 ? pathParts[0] : "";
+  const branch = "master";
+
+  if (owner && repo) {
+    const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${markdownPath}`;
+    const rawRes = await fetch(rawUrl);
+    if (rawRes.ok) return rawRes.text();
+  }
+
+  throw new Error("Post markdown not found");
+}
+
 function setShareLinks(title) {
   const shareUrl = window.location.href;
   const encodedUrl = encodeURIComponent(shareUrl);
@@ -97,17 +117,23 @@ async function initPost() {
     const posts = await indexRes.json();
     const postEntry = Array.isArray(posts) ? posts.find((p) => p.slug === slug) : null;
     if (!postEntry) throw new Error("Post not found");
+    let body = postEntry.content || "";
+    let title = postEntry.title || slug;
+    let date = formatDate(postEntry.date);
+    let summary = postEntry.summary || "";
+    let tags = Array.isArray(postEntry.tags) ? postEntry.tags : [];
 
-    const markdownPath = postEntry.file || `blogs/${slug}.md`;
-    const res = await fetch(markdownPath);
-    if (!res.ok) throw new Error("Post markdown not found");
-    const markdown = await res.text();
-
-    const { meta, body } = parseFrontmatter(markdown);
-    const title = meta.title || slug;
-    const date = formatDate(meta.date);
-    const summary = meta.summary || "";
-    const tags = Array.isArray(meta.tags) ? meta.tags : [];
+    // Backward compatibility for older index files without embedded content.
+    if (!body) {
+      const markdownPath = postEntry.file || `blogs/${slug}.md`;
+      const markdown = await fetchMarkdownWithFallback(markdownPath);
+      const parsed = parseFrontmatter(markdown);
+      body = parsed.body;
+      title = parsed.meta.title || title;
+      date = formatDate(parsed.meta.date || postEntry.date);
+      summary = parsed.meta.summary || summary;
+      tags = Array.isArray(parsed.meta.tags) ? parsed.meta.tags : tags;
+    }
 
     document.title = `${title} | Aidul Blog`;
 

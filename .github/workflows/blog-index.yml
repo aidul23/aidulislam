@@ -40,6 +40,7 @@ jobs:
                   raise SystemExit(f"Missing frontmatter in {md}")
 
               frontmatter = frontmatter_match.group(1)
+              body = text[frontmatter_match.end():].lstrip("\n")
               meta = {}
               for line in frontmatter.splitlines():
                   if ":" not in line:
@@ -64,6 +65,7 @@ jobs:
                   "tags": meta.get("tags", []),
                   "cover": meta.get("cover", ""),
                   "file": f"blogs/{md.name}",
+                  "content": body,
               }
               posts.append(post)
 

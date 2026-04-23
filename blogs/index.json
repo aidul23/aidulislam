@@ -1,0 +1,11 @@
+[
+  {
+    "slug": "blog-1",
+    "title": "The Next Frontier of Benchmarking: Beyond “Single-Query” LLMs",
+    "date": "2025-11-24",
+    "summary": "Why traditional single-turn benchmarks are no longer enough for evaluating agentic AI systems that plan, use tools, collaborate, and adapt over long workflows.",
+    "tags": ["Agentic AI", "LLM Evaluation", "Benchmarking"],
+    "cover": "blogs/assets/blog-1/cover.avif",
+    "file": "blogs/blog-1.md"
+  }
+]

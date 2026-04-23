@@ -226,3 +226,27 @@ if (publicationAbstracts.length > 0) {
         })
     })
 }
+
+/*==================== BLOG PREVIEW ====================*/
+const blogPreviewList = document.getElementById('blog-preview-list')
+
+if (blogPreviewList) {
+    fetch('blogs/index.json')
+        .then((res) => {
+            if (!res.ok) throw new Error('Blog index not found')
+            return res.json()
+        })
+        .then((posts) => {
+            if (!Array.isArray(posts) || posts.length === 0) return
+            const latest = posts.slice(0, 3)
+            blogPreviewList.innerHTML = latest.map((post) => `
+                <article class="blog__card">
+                    <h3 class="blog__title">${post.title || 'Untitled Post'}</h3>
+                    <p class="blog__meta">${post.date || ''}</p>
+                    <p class="blog__summary">${post.summary || ''}</p>
+                    <a href="blog-post.html?slug=${encodeURIComponent(post.slug)}" class="blog__link">Read more</a>
+                </article>
+            `).join('')
+        })
+        .catch(() => {})
+}

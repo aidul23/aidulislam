@@ -1,0 +1,84 @@
+name: Build Blog Index
+
+on:
+  push:
+    paths:
+      - "blogs/**/*.md"
+      - ".github/workflows/blog-index.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate blogs/index.json
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          blogs_dir = Path("blogs")
+          md_files = sorted([p for p in blogs_dir.glob("*.md") if p.name.lower() != "readme.md"])
+          posts = []
+
+          for md in md_files:
+              text = md.read_text(encoding="utf-8")
+              frontmatter_match = re.match(r"^---\n(.*?)\n---\n", text, flags=re.S)
+              if not frontmatter_match:
+                  raise SystemExit(f"Missing frontmatter in {md}")
+
+              frontmatter = frontmatter_match.group(1)
+              meta = {}
+              for line in frontmatter.splitlines():
+                  if ":" not in line:
+                      continue
+                  key, value = line.split(":", 1)
+                  key = key.strip()
+                  value = value.strip()
+                  if value.startswith('"') and value.endswith('"'):
+                      value = value[1:-1]
+                  if value.startswith("[") and value.endswith("]"):
+                      items = [x.strip().strip('"') for x in value[1:-1].split(",") if x.strip()]
+                      meta[key] = items
+                  else:
+                      meta[key] = value
+
+              slug = meta.get("slug") or md.stem
+              post = {
+                  "slug": slug,
+                  "title": meta.get("title", slug),
+                  "date": meta.get("date", ""),
+                  "summary": meta.get("summary", ""),
+                  "tags": meta.get("tags", []),
+                  "cover": meta.get("cover", ""),
+                  "file": f"blogs/{md.name}",
+              }
+              posts.append(post)
+
+          posts.sort(key=lambda p: p.get("date", ""), reverse=True)
+          output = blogs_dir / "index.json"
+          output.write_text(json.dumps(posts, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          print(f"Wrote {output} with {len(posts)} posts")
+          PY
+
+      - name: Commit updated blog index
+        run: |
+          if git diff --quiet -- blogs/index.json; then
+            echo "No index changes"
+            exit 0
+          fi
+          git add blogs/index.json
+          git commit -m "chore: update blog index"
+          git push

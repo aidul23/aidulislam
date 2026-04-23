@@ -825,6 +825,55 @@ body.dark-theme .publications__hover-modal {
   color: var(--first-color-alt);
 }
 
+/*==================== BLOG ====================*/
+.blog__container {
+  display: grid;
+  row-gap: 1rem;
+}
+
+.blog__actions {
+  display: flex;
+  justify-content: center;
+}
+
+.blog__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.blog__card {
+  background-color: var(--container-color);
+  border: 1px solid var(--input-color);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.blog__title {
+  font-size: var(--h3-font-size);
+  margin-bottom: var(--mb-0-25);
+}
+
+.blog__meta {
+  font-size: var(--small-font-size);
+  color: var(--text-color-light);
+  margin-bottom: var(--mb-0-5);
+}
+
+.blog__summary {
+  margin-bottom: var(--mb-0-75);
+}
+
+.blog__link {
+  color: var(--first-color);
+  font-weight: var(--font-medium);
+}
+
+.blog__link:hover {
+  color: var(--first-color-alt);
+}
+
 /*==================== TEACHING ====================*/
 .teaching__container {
   grid-template-columns: 1fr;
@@ -1345,6 +1394,10 @@ body.dark-theme .publications__hover-modal {
     margin-top: 4.5rem;
   }
 
+  .blog__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .teaching__container {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1368,6 +1421,10 @@ body.dark-theme .publications__hover-modal {
 
   .portfolio__content {
     column-gap: 5rem;
+  }
+
+  .blog__grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
 
